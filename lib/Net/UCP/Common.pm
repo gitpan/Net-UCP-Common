@@ -12,7 +12,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw(STX ETX UCP_DELIMITER DEF_SMSC_PORT ACK NACK 
 our @EXPORT_OK   = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT      = qw();
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use constant STX           => chr(2);
 use constant ETX           => chr(3);
@@ -45,9 +45,7 @@ sub data_len {
     shift;
 
     defined($_[0]) || return(0);
-
     my $len = length(pop @_) + 17;
-
     for(1..(5-length($len))) {
         $len = '0' . $len;
     }
@@ -101,6 +99,28 @@ sub encode_7bit {
     sprintf("%02X", length($rest) < 5 ? length($user_data)-1 : length($user_data)).uc($user_data);
 }
 
+sub convert_sms_to_ascii {
+    my $self = shift;
+    my $msg = shift;
+
+    $msg =~ tr{\x00\x02\x05\x04\x06\x07\x08\x11\x5f\x7f}
+    {\x40\x24\xe8\xe9\xf9\xec\xf2\x5f\xa7\xe0} if defined $msg;
+ 
+    return $msg;
+}
+
+
+sub convert_ascii_to_sms {
+    my $self = shift;
+    my $msg = shift;
+    
+    $msg =~ tr{\x40\x24\xe8\xe9\xf9\xec\xf2\x5f\xa7\xe0}
+    {\x00\x02\x05\x04\x06\x07\x08\x11\x5f\x7f} if defined $msg;
+    
+    return $msg;
+}
+
+
 sub ia5_decode {
     my ($self, $msg) = @_;
 
@@ -117,7 +137,31 @@ sub ia5_decode {
 
 sub ia5_encode { shift; join('',map {sprintf "%02X", ord} split(//,pop(@_))); }
 
-sub _init { shift; }
+sub error_by_code {
+    my $self = shift;
+    
+    my $ec = shift || '';
+    return $self->{EC}->{$ec};
+}
+
+sub _init { 
+    my $self = shift;
+
+    my %ec_string = (
+		     ''   => 'Unknown error code',
+		     '01' => 'Checksum error',
+		     '02' => 'Syntax error',
+		     '04' => 'Operation not allowed (at this point in time)',
+		     '05' => 'Call barring active',
+		     '06' => 'AdC invalid',
+		     '07' => 'Authentication failure',
+		     '08' => 'Legitimisation code for all calls, failure',
+		     '24' => 'Message too long',
+		     '26' => 'Message type not valid for the pager type',
+		     );
+    
+    $self->{EC} = %ec_string;
+}
 
 
 1;
