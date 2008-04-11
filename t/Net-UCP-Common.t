@@ -16,14 +16,14 @@ BEGIN { use_ok('Net::UCP::Common') };
 
 my $h = new Net::UCP::Common;
 
-ok(defined($h), 'handler to Net::UCP::Common stuff is defined');
-ok($h->ETX eq chr(3), 'ETX constant ok');
-ok($h->STX eq chr(2), 'STX constant ok');
-ok($h->UCP_DELIMITER eq "/", 'UCP protocol string delimiter is ok');
-ok($h->ACK eq "A", 'ACK is ok and accessible');
-ok($h->NACK eq "N", 'NAC is ok and accessible');
-ok($h->checksum("Marco Romano") eq "7E", 'checksum for "Marco Romano" string is 7E');
-ok($h->data_len("Marco Romano") eq "00029", 'length of "Marco Romano" string is 00029');
-ok($h->ia5_decode(414141) eq "AAA", 'ia5 decoding works');
-ok($h->ia5_encode("AAA") eq "414141", 'ia5 encode works');
-ok($h->encode_7bit("Marco") eq "09CDB07CFC06", '7bit encoding works...'); #Use Encode to make encoding
+ok(defined($h),                                'handler to Net::UCP::Common stuff is defined');
+ok(Net::UCP::Common::ETX eq chr(3),            'ETX constant');
+ok(Net::UCP::Common::STX eq chr(2),            'STX constant');
+ok(Net::UCP::Common::UCP_DELIMITER eq "/",     'UCP protocol string delimiter');
+ok(Net::UCP::Common::ACK eq "A",               'ACK is ok and accessible');
+ok(Net::UCP::Common::NACK eq "N",              'NAC is ok and accessible');
+ok($h->checksum("Marco Romano") eq "7E",       'checksum for "Marco Romano" string is 7E');
+ok($h->data_len("Marco Romano") eq "00029",    'length of "Marco Romano" string is 00029');
+ok($h->ia5_decode(414141) eq "AAA",            'ia5 decoding works');
+ok($h->ia5_encode("AAA") eq "414141",          'ia5 encode works');
+ok($h->encode_7bit("Marco") eq "09CDB07CFC06", '7bit encoding works...');
