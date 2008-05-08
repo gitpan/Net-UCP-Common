@@ -12,7 +12,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw(STX ETX UCP_DELIMITER DEF_SMSC_PORT ACK NACK 
 our @EXPORT_OK   = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT      = qw();
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use constant STX           => chr(2);
 use constant ETX           => chr(3);
@@ -161,6 +161,7 @@ sub _init {
 		     );
     
     $self->{EC} = %ec_string;
+    $self;
 }
 
 
